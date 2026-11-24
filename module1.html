@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOH4M Module 1: Foundations of Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a study binder. Sticky tab bar on top, one readable column of lessons,
+   amber "highlighter" callouts for exam tips, cobalt for interactive controls. */
+:root{
+  --paper:#f4f6fa;
+  --card:#ffffff;
+  --ink:#16213a;
+  --muted:#56617a;
+  --line:#d9dfea;
+  --accent:#2747c7;
+  --accent-soft:#e6ebfc;
+  --tip:#ffe27a;
+  --tip-ink:#4a3a00;
+  --good:#167a4a;
+  --good-soft:#e2f5ea;
+  --bad:#b3261e;
+  --bad-soft:#fbe6e4;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Source Sans 3", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1424; --card:#182037; --ink:#e7ecf8; --muted:#a3adc6; --line:#2c3655;
+    --accent:#8ea4ff; --accent-soft:#232f57; --tip:#4a3c08; --tip-ink:#ffe99a;
+    --good:#5fd39a; --good-soft:#123826; --bad:#ff8a80; --bad-soft:#3d1916;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1424; --card:#182037; --ink:#e7ecf8; --muted:#a3adc6; --line:#2c3655;
+  --accent:#8ea4ff; --accent-soft:#232f57; --tip:#4a3c08; --tip-ink:#ffe99a;
+  --good:#5fd39a; --good-soft:#123826; --bad:#ff8a80; --bad-soft:#3d1916;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:17px/1.6 var(--body)}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);font-weight:800}
+h2{font-size:1.5rem;font-weight:800}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+a{color:var(--accent)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+header.top{padding:28px 20px 18px;max-width:980px;margin:0 auto;display:grid;gap:8px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.lede{color:var(--muted);max-width:65ch}
+.progress{display:flex;gap:14px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.progress b{color:var(--ink)}
+
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+nav.tabs .inner{max-width:980px;margin:0 auto;padding:0 12px;display:flex;gap:4px;overflow-x:auto}
+nav.tabs button{background:none;border:0;padding:14px 14px 12px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+
+main{max-width:980px;margin:0 auto;padding:24px 20px 80px}
+section.panel{display:none;gap:22px}
+section.panel.active{display:grid}
+
+/* lesson layout */
+.lesson-nav{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 14px;font-size:.92rem;font-weight:600}
+.chip[aria-pressed="true"],.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#0f1424}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#0f1424}}
+
+.lesson{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:grid;gap:16px}
+.lesson > header{display:grid;gap:4px}
+.lesson .num{font-family:var(--display);color:var(--accent);font-weight:800;font-size:.95rem}
+.lesson p,.lesson li{max-width:70ch}
+.lesson ul,.lesson ol{margin:0;padding-left:1.25em;display:grid;gap:4px}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.box{border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:6px;align-content:start}
+.box h4{font-size:1rem}
+.box .tag{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.box.vs{border-left:4px solid var(--accent)}
+.small{font-size:.92rem;color:var(--muted)}
+
+details{border:1px solid var(--line);border-radius:10px;background:var(--card)}
+details > summary{list-style:none;padding:12px 14px;font-weight:700;display:flex;justify-content:space-between;gap:12px;cursor:pointer}
+details > summary::-webkit-details-marker{display:none}
+details > summary::after{content:"+";font-family:var(--display);color:var(--accent);font-size:1.2rem;line-height:1}
+details[open] > summary::after{content:"−"}
+details > .body{padding:0 14px 14px;display:grid;gap:10px}
+
+.tip{background:var(--tip);color:var(--tip-ink);border-radius:10px;padding:12px 14px;display:grid;gap:4px}
+.tip strong.label{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase}
+
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+.tablewrap{overflow-x:auto}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--display);font-weight:600;background:var(--accent-soft)}
+
+/* pyramid */
+.pyramid{display:grid;gap:6px;justify-items:center}
+.pyramid div{background:var(--accent-soft);border:1px solid var(--line);border-radius:8px;padding:10px;text-align:center;display:grid;gap:2px}
+.pyramid div b{font-family:var(--display)}
+.pyramid .t{width:min(100%,360px)} .pyramid .m{width:min(100%,560px)} .pyramid .l{width:100%}
+
+/* skill bars */
+.skillrow{display:grid;grid-template-columns:90px 1fr;gap:10px;align-items:center;font-size:.9rem}
+.bar{display:flex;height:30px;border-radius:6px;overflow:hidden;font-size:.78rem;font-weight:700}
+.bar span{display:flex;align-items:center;justify-content:center;color:#fff;white-space:nowrap;overflow:hidden}
+.c1{background:#2747c7}.c2{background:#2f8f83}.c3{background:#c46a18}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* POLC cycle */
+.polc{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.polc button{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:14px;text-align:left;display:grid;gap:4px}
+.polc button b{font-family:var(--display);font-size:1.4rem;color:var(--accent)}
+.polc button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.polc-out{border-left:4px solid var(--accent);padding:10px 14px;background:var(--accent-soft);border-radius:0 10px 10px 0}
+
+/* spectrum */
+.spectrum{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.spectrum div{padding:12px;display:grid;gap:4px;font-size:.92rem}
+.spectrum div b{font-family:var(--display)}
+.s1{background:var(--bad-soft)}.s2{background:color-mix(in srgb,var(--bad-soft) 45%,var(--card))}
+.s3{background:color-mix(in srgb,var(--good-soft) 45%,var(--card))}.s4{background:var(--good-soft)}
+.spectrum-axis{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);font-weight:700}
+@media (max-width:640px){.spectrum{grid-template-columns:1fr 1fr}}
+
+/* flashcards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.flash{perspective:900px;min-height:170px;border:0;background:none;padding:0;text-align:left}
+.flash .inner{position:relative;width:100%;height:100%;min-height:170px;transition:transform .45s;transform-style:preserve-3d}
+.flash.flipped .inner{transform:rotateY(180deg)}
+.flash .face{position:absolute;inset:0;backface-visibility:hidden;border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;align-content:start;gap:6px;background:var(--card);overflow:auto}
+.flash .back{transform:rotateY(180deg);background:var(--accent-soft)}
+.flash .face h4{font-size:1.08rem}
+.flash .hint{font-size:.8rem;color:var(--muted);margin-top:auto}
+@media (prefers-reduced-motion:reduce){.flash .inner{transition:none}}
+
+/* drills */
+.drill{display:grid;gap:12px}
+.drill-item{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--card);display:grid;gap:10px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:7px 12px;font-weight:600;font-size:.93rem}
+.opt.right{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.feedback{font-size:.94rem;border-radius:8px;padding:8px 12px}
+.feedback.ok{background:var(--good-soft)} .feedback.no{background:var(--bad-soft)}
+
+/* stepper */
+.stepper{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:18px;display:grid;gap:12px}
+.steps{display:grid;gap:10px;counter-reset:s}
+.step{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.step .n{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--display)}
+.step.hidden{display:none}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+:root[data-theme="dark"] .btn:not(.ghost){color:#0f1424}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn:not(.ghost){color:#0f1424}}
+
+/* quiz */
+.quizhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.score{font-family:var(--display);font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.meter{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.meter span{display:block;height:100%;background:var(--accent);transition:width .3s}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px}
+.q .qtype{font-size:.78rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.q .case{background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:.96rem}
+.choices{display:grid;gap:8px}
+.choice{border:1px solid var(--line);border-radius:9px;background:var(--paper);padding:10px 12px;text-align:left;display:grid;grid-template-columns:26px 1fr;gap:8px}
+.choice .letter{font-weight:700;color:var(--muted)}
+.choice.right{border-color:var(--good);background:var(--good-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice .note{grid-column:2;font-size:.88rem;color:var(--muted);display:none}
+.choice.show .note{display:block}
+.choice:disabled{cursor:default;color:var(--ink)}
+.resultbox{border:2px solid var(--accent);border-radius:12px;padding:18px;display:grid;gap:8px;background:var(--card)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="eyebrow">BOH4M Business Leadership · Module 1 of 4 · Final exam Fri 27 Nov 2026, 8:00 AM</div>
+  <h1>Unit 1: Foundations of Management</h1>
+  <p class="lede">Work through the lessons in order, flip the concept cards until they feel easy, try the worked examples, then take the practice quiz. Yellow boxes are the distinctions examiners love to test.</p>
+  <div class="progress" id="progress"></div>
+</header>
+
+<nav class="tabs" aria-label="Module sections">
+  <div class="inner" role="tablist">
+    <button role="tab" id="tab-lessons" aria-controls="lessons" aria-selected="true">1 · Topic Lessons</button>
+    <button role="tab" id="tab-cards" aria-controls="cards" aria-selected="false">2 · Concept Cards</button>
+    <button role="tab" id="tab-examples" aria-controls="examples" aria-selected="false">3 · Step-by-Step Examples</button>
+    <button role="tab" id="tab-quiz" aria-controls="quiz" aria-selected="false">4 · Practice Quiz</button>
+  </div>
+</nav>
+
+<main>
+<!-- ================= LESSONS ================= -->
+<section class="panel active" id="lessons" role="tabpanel" aria-labelledby="tab-lessons">
+  <div class="lesson-nav" aria-label="Jump to lesson">
+    <a class="chip" href="#l1">1 Managers</a>
+    <a class="chip" href="#l2">2 POLC</a>
+    <a class="chip" href="#l3">3 Classical theories</a>
+    <a class="chip" href="#l4">4 Modern theories</a>
+    <a class="chip" href="#l5">5 CSR</a>
+    <a class="chip" href="#l6">6 Ethics</a>
+    <a class="chip" href="#l7">7 Globalization</a>
+  </div>
+
+  <!-- L1 -->
+  <article class="lesson" id="l1">
+    <header><span class="num">Lesson 1</span><h2>The role of the manager</h2></header>
+    <p>A <b>manager</b> is a person who supports, activates, and is responsible for the work of others. Managers exist in <b>all</b> organizations: businesses, schools, hospitals, sports clubs, charities.</p>
+
+    <h3>The three levels of management</h3>
+    <div class="pyramid" aria-label="Management hierarchy">
+      <div class="t"><b>Top-level: Strategy &amp; Vision</b><span class="small">CEO · COO · CFO · CMO · CTO · President · VP · Board of Directors</span></div>
+      <div class="m"><b>Middle-level: Implementation &amp; Coordination</b><span class="small">Department, Regional, Plant, Branch, General, Operations, Project Managers · Senior Supervisor</span></div>
+      <div class="l"><b>Lower-level (first-line): Execution &amp; Supervision</b><span class="small">Supervisor · Team Leader · Shift Manager · Foreman · Retail Store Manager · Assistant/Office Manager</span></div>
+    </div>
+    <div class="grid3">
+      <div class="box"><span class="tag">Top</span><h4>Sets the direction</h4><ul><li>Company goals and long-term vision</li><li>Major financial and strategic decisions</li><li>Oversees middle and lower managers</li><li>Responsible for overall success and growth</li></ul></div>
+      <div class="box"><span class="tag">Middle</span><h4>The bridge</h4><ul><li>Turns top-level strategy into operational plans</li><li>Supervises and mentors lower managers</li><li>Coordinates between departments</li><li>Reports performance metrics upward</li></ul></div>
+      <div class="box"><span class="tag">Lower</span><h4>Runs the day</h4><ul><li>Supervises daily tasks and workflows</li><li>Trains and onboards frontline staff</li><li>Makes sure quality standards and deadlines are met</li><li>Reports problems to middle management</li></ul></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · 100% score alert</strong><p>Classify by <b>what the person does</b>, not by the word "manager" in the title. A "Retail Store Manager" supervises frontline staff day to day, so they are <b>lower-level</b>. A "Regional Manager" coordinates several stores, so they are <b>middle-level</b>.</p></div>
+
+    <h3>Six types of managers</h3>
+    <div class="grid2">
+      <div class="box vs"><span class="tag">Pair 1</span><h4>Line manager vs. Staff manager</h4><p><b>Line:</b> directly supervises the day-to-day work of employees who make the organization's goods or services (e.g., production supervisor).</p><p><b>Staff:</b> uses specialist expertise to <b>advise and support</b> line workers (e.g., Human Resources, Legal).</p></div>
+      <div class="box vs"><span class="tag">Pair 2</span><h4>Functional manager vs. General manager</h4><p><b>Functional:</b> responsible for <b>one</b> area such as finance, marketing, production, personnel, accounting or sales.</p><p><b>General:</b> responsible for complex, <b>multifunctional</b> units; coordinates across several departments.</p></div>
+      <div class="box vs"><span class="tag">Pair 3</span><h4>Project manager vs. Executive manager</h4><p><b>Project:</b> coordinates people and resources to finish a specific project on time and on budget. Often <b>temporary</b>.</p><p><b>Executive:</b> responsible for the whole organization or a major part of it; sets long-term direction and culture (e.g., CEO, CFO).</p></div>
+    </div>
+
+    <h3>Daniel Katz's Skills Model</h3>
+    <div class="grid3">
+      <div class="box"><h4><span style="color:#2747c7">■</span> Conceptual skills</h4><p>Think analytically, solve complex problems, see the organization <b>as a whole system</b>.</p></div>
+      <div class="box"><h4><span style="color:#2f8f83">■</span> Human skills</h4><p>Work well with people, build trust, communicate. <b>Vital at all levels.</b></p></div>
+      <div class="box"><h4><span style="color:#c46a18">■</span> Technical skills</h4><p>Specialist know-how to do specific tasks (accounting, coding, engineering).</p></div>
+    </div>
+    <div class="box" aria-label="Approximate skill mix by level">
+      <span class="tag">Skill mix by management level (approximate, as shown on the slides)</span>
+      <div class="skillrow"><span>Top</span><div class="bar"><span class="c1" style="width:50%">Conceptual</span><span class="c2" style="width:35%">Human</span><span class="c3" style="width:15%">Tech</span></div></div>
+      <div class="skillrow"><span>Middle</span><div class="bar"><span class="c1" style="width:33%">Conceptual</span><span class="c2" style="width:40%">Human</span><span class="c3" style="width:27%">Tech</span></div></div>
+      <div class="skillrow"><span>Lower</span><div class="bar"><span class="c1" style="width:17%">Concept.</span><span class="c2" style="width:38%">Human</span><span class="c3" style="width:45%">Technical</span></div></div>
+      <div class="legend"><span><i class="c1"></i>Conceptual</span><span><i class="c2"></i>Human</span><span><i class="c3"></i>Technical</span></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip</strong><p>Moving <b>up</b> the hierarchy: conceptual skills <b>increase</b>, technical skills <b>decrease</b>, human skills stay important at <b>every</b> level. Expect a question that asks you to explain this shift.</p></div>
+
+    <details><summary>Good vs. bad managers (and employees)</summary><div class="body">
+      <div class="grid2">
+        <div class="box"><h4>Good manager</h4><p>Approachable, fair, confident but admits mistakes. Communicates clearly, listens actively, gives constructive feedback, leads by example.</p></div>
+        <div class="box"><h4>Bad manager</h4><p>Arrogant, biased (favouritism), insecure. Micromanages, blames others, withholds information, creates a toxic or fearful environment.</p></div>
+        <div class="box"><h4>Good employee</h4><p>Responsible, honest, motivated. On time, meets deadlines, takes initiative, works well in a team.</p></div>
+        <div class="box"><h4>Bad employee</h4><p>Lazy, negative, unreliable. Often late or absent, misses deadlines, complains, disengaged.</p></div>
+      </div>
+    </div></details>
+
+    <details><summary>Six 21st-century challenges for managers</summary><div class="body">
+      <div class="tablewrap"><table>
+        <tr><th>Challenge</th><th>What it means for managers</th></tr>
+        <tr><td>Intellectual capital</td><td>The shared knowledge or "brainpower" of the workforce. Attract and keep skilled workers so knowledge isn't lost.</td></tr>
+        <tr><td>Globalisation</td><td>Worldwide interdependence of resources and markets. Cultural barriers, legal differences, global competition.</td></tr>
+        <tr><td>Technology</td><td>AI, cloud, cybersecurity, 5G: constant updates, staff training, protecting digital data.</td></tr>
+        <tr><td>Diversity</td><td>Differences in gender, age, race, religion. Prevent miscommunication; use diverse views for innovation.</td></tr>
+        <tr><td>Ethics</td><td>Moral principles and CSR: avoid corruption, treat people fairly, decide honestly.</td></tr>
+        <tr><td>Workforce well-being</td><td>Mental health, preventing burnout, work-life balance, which drive performance and retention.</td></tr>
+      </table></div>
+    </div></details>
+  </article>
+
+  <!-- L2 -->
+  <article class="lesson" id="l2">
+    <header><span class="num">Lesson 2</span><h2>The four functions of management (POLC)</h2></header>
+    <p>Management is the process of achieving organizational goals through four functions that run as a <b>continuous cycle</b>. Tap each one to see what it looks like in a real workplace.</p>
+    <div class="polc" id="polc">
+      <button type="button" data-k="P" aria-pressed="true"><b>P</b><strong>Planning</strong><span class="small">Set objectives and decide how to reach them</span></button>
+      <button type="button" data-k="O" aria-pressed="false"><b>O</b><strong>Organizing</strong><span class="small">Arrange tasks, people and resources</span></button>
+      <button type="button" data-k="L" aria-pressed="false"><b>L</b><strong>Leading</strong><span class="small">Inspire and motivate people</span></button>
+      <button type="button" data-k="C" aria-pressed="false"><b>C</b><strong>Controlling</strong><span class="small">Measure, compare, correct</span></button>
+    </div>
+    <div class="polc-out" id="polcOut" aria-live="polite"></div>
+    <div class="tip"><strong class="label">Exam tip · Planning vs. Controlling</strong><p>Planning sets the target <b>before</b> the work. Controlling checks results <b>after</b> (or during) the work against that target and takes <b>corrective action</b>. Key words for Controlling: <i>measure, compare, monitor, KPI, corrective action</i>. Then the cycle loops back to Planning.</p></div>
+  </article>
+
+  <!-- L3 -->
+  <article class="lesson" id="l3">
+    <header><span class="num">Lesson 3</span><h2>Classical management theories</h2></header>
+    <p>Classical theory came from the <b>late 1800s, during the Industrial Revolution</b>. It assumed employees have only <b>economic and physical needs</b> (social needs and job satisfaction don't matter) and searched for one universal "best way" to do every job, to raise <b>efficiency</b>.</p>
+    <div class="grid3">
+      <div class="box vs"><span class="tag">Scientific</span><h4>F.W. Taylor</h4><p>The <b>"one best way"</b> to do a job. Observe, measure and record jobs to find the most efficient method.</p></div>
+      <div class="box vs"><span class="tag">Administrative</span><h4>Henri Fayol</h4><p>Management as a <b>universal process</b> (planning, organizing, controlling, deciding) built on <b>14 principles</b>.</p></div>
+      <div class="box vs"><span class="tag">Bureaucratic</span><h4>Max Weber</h4><p><b>Rules, guidelines and division of labour.</b> Success depends on the legal power of the <b>position</b>, not the person's personality.</p></div>
+    </div>
+
+    <details open><summary>Scientific Management: F.W. Taylor (1856–1915)</summary><div class="body">
+      <p>An American engineer who started as a machinist, invented work-study and founded the scientific approach. He saw humans as machines to be optimised, and treated <b>money as the main motivator</b>.</p>
+      <ul>
+        <li><b>Piecework pay:</b> paid per item produced (plus bonuses), not a flat wage.</li>
+        <li><b>Extreme division of labour:</b> each worker does one narrow, repetitive task, learned quickly and done fast.</li>
+        <li><b>Tight management control:</b> work goes at the pace of the factory/manager, not the employee.</li>
+        <li>Goals: improve efficiency, reduce costs, increase wages (higher efficiency → profit → pay), remove guesswork.</li>
+      </ul>
+      <div class="box"><h4>Taylor's four principles</h4><ol><li><b>Science, not rule of thumb:</b> standard methods from observation and measurement.</li><li><b>Scientific selection and training</b> of workers by skill.</li><li><b>Cooperation</b> between managers and workers with clear responsibilities.</li><li><b>Division of work and responsibility:</b> managers plan, workers execute.</li></ol></div>
+      <p><b>Impact:</b> shaped mass production at Ford Motor Company. <b>Criticism:</b> treated workers like machines, put speed over well-being, led to poor industrial relations and the growth of trade unions.</p>
+    </div></details>
+
+    <details><summary>Administrative Management: Henri Fayol's 14 principles</summary><div class="body">
+      <p>Fayol (1841–1925) believed every business should follow these principles. A memory trick for the first five: <b>"Do All Duties Under Unity"</b> (Division, Authority, Discipline, Unity of command, Unity of direction).</p>
+      <div class="tablewrap"><table>
+        <tr><th>#</th><th>Principle</th><th>In plain words</th></tr>
+        <tr><td>1</td><td>Division of work</td><td>Specialising makes workers more efficient.</td></tr>
+        <tr><td>2</td><td>Authority (and responsibility)</td><td>Managers have the right to give orders and are responsible for results.</td></tr>
+        <tr><td>3</td><td>Discipline</td><td>Employees respect rules and agreements.</td></tr>
+        <tr><td>4</td><td>Unity of command</td><td>Each employee takes orders from <b>one</b> boss only.</td></tr>
+        <tr><td>5</td><td>Unity of direction</td><td>Activities with the same goal follow <b>one</b> plan under one manager.</td></tr>
+        <tr><td>6</td><td>Subordination of individual interest</td><td>The organization's goals come before personal interests.</td></tr>
+        <tr><td>7</td><td>Remuneration</td><td>Fair pay for work done.</td></tr>
+        <tr><td>8</td><td>Centralization</td><td>Find the right balance of decision-making at the top vs. spread out.</td></tr>
+        <tr><td>9</td><td>Scalar chain</td><td>A clear line of authority from top to bottom.</td></tr>
+        <tr><td>10</td><td>Order</td><td>A place for everyone and everything.</td></tr>
+        <tr><td>11</td><td>Equity</td><td>Treat employees fairly and kindly.</td></tr>
+        <tr><td>12</td><td>Stability of tenure</td><td>Low staff turnover; give people time to settle into jobs.</td></tr>
+        <tr><td>13</td><td>Initiative</td><td>Let employees suggest and carry out ideas.</td></tr>
+        <tr><td>14</td><td>Esprit de corps</td><td>Team spirit and unity build harmony.</td></tr>
+      </table></div>
+      <p class="small">Your slides asked you to research these yourself, so the list above follows Fayol's standard 14. Are they still relevant? Mostly yes: unity of command, fair pay, equity and team spirit still guide modern firms, though strict centralization fits less well in fast-moving companies.</p>
+      <div class="tip"><strong class="label">Exam tip · Unity of command vs. unity of direction</strong><p><b>Command</b> = one <b>boss</b> per employee. <b>Direction</b> = one <b>plan</b> per goal. Students mix these up every year.</p></div>
+    </div></details>
+
+    <details><summary>Bureaucratic Management: Max Weber</summary><div class="body">
+      <p>Weber (1864–1920) argued organizations run best on clear rules and <b>legal-rational authority</b>: you obey a manager because of the position they hold, not because they are charming.</p>
+      <ul>
+        <li>Clear division of labour and defined job duties</li>
+        <li>A hierarchy of authority (chain of command)</li>
+        <li>Formal written rules and procedures</li>
+        <li>Impersonality: rules apply equally to everyone</li>
+        <li>Hiring and promotion based on qualifications and merit</li>
+        <li>Careful written records</li>
+      </ul>
+      <p><b>Strengths:</b> consistency, fairness, predictability. <b>Weaknesses:</b> "red tape", slow decisions, rigid, can discourage creativity. Governments, banks and the military are classic examples.</p>
+    </div></details>
+
+    <div class="box"><h4>Critique of classical theory</h4><ul><li><b>Ignores social needs</b>: doesn't think social needs matter to workers.</li><li><b>Treats everyone the same</b>: ignores that employees differ.</li><li><b>Excludes employee voice</b>: ignores workers' ideas about how work gets done.</li></ul></div>
+    <div class="tip"><strong class="label">Exam tip</strong><p>A question that says "relies on legal authority, not personality" = <b>Bureaucratic (Weber)</b>. "One best way" = <b>Scientific (Taylor)</b>. "14 principles" or "universal process of managing" = <b>Administrative (Fayol)</b>.</p></div>
+  </article>
+
+  <!-- L4 -->
+  <article class="lesson" id="l4">
+    <header><span class="num">Lesson 4</span><h2>Modern management theories</h2></header>
+    <h3>McGregor's Theory X and Theory Y</h3>
+    <p>Two opposite sets of <b>assumptions a manager holds about employees</b>. Each assumption leads to a different management style.</p>
+    <div class="tablewrap"><table>
+      <tr><th></th><th>Theory X</th><th>Theory Y</th></tr>
+      <tr><td><b>Employees are…</b></td><td>Naturally lazy, avoid work, don't want responsibility, fear change</td><td>Like work, seek responsibility, show initiative and creativity, excited by change</td></tr>
+      <tr><td><b>The manager is…</b></td><td>Authoritarian, repressive, tight control, no employee involvement, pessimistic</td><td>Liberating, empowering, gives responsibility and freedom to develop, optimistic</td></tr>
+      <tr><td><b>Workers become…</b></td><td>Unmotivated, lazy, rebellious, poor work</td><td>Motivated, loyal, productive, proud of their work, respect managers</td></tr>
+    </table></div>
+    <div class="tip"><strong class="label">Exam tip · Self-fulfilling prophecy</strong><p>Whichever theory a manager believes, they turn out to be "right", because the way they manage <b>causes</b> employees to act that way. If asked "what effect do a manager's assumptions have?", the answer is <b>a self-fulfilling prophecy</b>.</p></div>
+
+    <h3>Three modern approaches</h3>
+    <div class="grid3">
+      <div class="box vs"><span class="tag">Approach 1</span><h4>Quantitative</h4><p>Uses <b>maths models, statistics</b> and decision tools.</p><p class="small"><b>+</b> data-driven, optimises resources, reduces risk via forecasting<br><b>−</b> ignores human factors, not all problems are measurable</p><p class="small"><b>Best for:</b> large-scale operations, manufacturing, logistics, finance, stable demand (e.g., banking).</p></div>
+      <div class="box vs"><span class="tag">Approach 2</span><h4>Systems</h4><p>The business is a set of <b>interconnected parts</b> (departments, employees, suppliers) working to common goals.</p><p class="small"><b>+</b> cross-department teamwork, keeps parts in sync, holistic problem-solving<br><b>−</b> complex, time-consuming coordination</p><p class="small"><b>Best for:</b> large, multi-department corporations.</p></div>
+      <div class="box vs"><span class="tag">Approach 3</span><h4>Contingency</h4><p><b>No one-size-fits-all</b>; the right decision depends on the situation.</p><p class="small"><b>+</b> flexible, works across industries, encourages innovation<br><b>−</b> needs skilled decision-makers, can be inconsistent</p><p class="small"><b>Best for:</b> startups, fast-changing industries (tech, fashion).</p></div>
+    </div>
+    <p><b>Final verdict from your slides:</b> the Contingency Approach is often best overall, because it combines parts of the Quantitative and Systems approaches while staying flexible.</p>
+    <p class="small">Note: your Unit 1 slides also include a lesson on motivational theories (Taylor, Mayo, Skinner, Maslow, Alderfer, McClelland). Those are taught in full in Module 4.</p>
+  </article>
+
+  <!-- L5 -->
+  <article class="lesson" id="l5">
+    <header><span class="num">Lesson 5</span><h2>Corporate Social Responsibility (CSR)</h2></header>
+    <p><b>CSR</b> is an organization's obligation to act in ways that serve <b>both its own interests and the interests of society</b>. A <b>stakeholder</b> is any individual, group or organization that can <b>affect or be affected by</b> a business's decisions, actions and policies.</p>
+    <div class="grid2">
+      <div class="box"><span class="tag">Inside the business</span><h4>Internal stakeholders</h4><ul><li><b>Employees</b>: fair pay, safety, respect for rights</li><li><b>Managers &amp; executives</b>: performance, ethics, reputation</li><li><b>Owners &amp; shareholders</b>: profits plus responsible, sustainable behaviour</li></ul></div>
+      <div class="box"><span class="tag">Outside the business</span><h4>External stakeholders</h4><ul><li><b>Customers</b>: safe quality products, honest marketing</li><li><b>Suppliers &amp; partners</b>: fair contracts, on-time payment</li><li><b>Governments</b>: compliance with labour, environmental, tax laws</li><li><b>Local communities</b>: jobs, noise, pollution, investment</li><li><b>NGOs &amp; activists</b>: monitor and pressure firms</li><li><b>Trade unions</b>: workers' wages, safety, rights</li></ul></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Stakeholder analysis</strong><p>For a case question, list 2–3 stakeholders, say whether each is internal or external, state <b>what they want</b>, and explain <b>how they influence the decision</b> (e.g., customers can boycott, governments can fine, employees can quit or strike).</p></div>
+
+    <h3>Two CSR principles</h3>
+    <div class="grid2">
+      <div class="box vs"><span class="tag">Give back</span><h4>Charity Principle</h4><p>Wealthy firms have a duty to support the less fortunate through <b>philanthropy and donations</b>.</p><p class="small">Examples: disaster relief, scholarships, food bank donations, medicines for clinics, paid volunteer days.</p></div>
+      <div class="box vs"><span class="tag">Take care of</span><h4>Stewardship Principle</h4><p>Leaders manage resources as <b>caretakers for society</b>, protecting the long-term health of people, communities and the environment.</p><p class="small">Examples: sustainability investments, fair-wage supply chains, community infrastructure, replanting, employee development.</p></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Charity vs. Stewardship</strong><p>Charity = <b>giving money or goods away</b> (a one-way gift). Stewardship = <b>how the business runs itself</b>, managing resources responsibly for the long term. Donating to a flood fund is charity; switching to recycled packaging is stewardship.</p></div>
+
+    <h3>Two views on social responsibility</h3>
+    <div class="grid2">
+      <div class="box vs"><h4>Classical View (Milton Friedman)</h4><p>Management's <b>only</b> responsibility is to <b>maximize profits for shareholders</b>. Friedman famously argued that the social responsibility of business is to increase its profits.</p><p class="small"><b>Arguments against CSR:</b> lower profits and higher costs; dilutes the business purpose; gives business too much social power; business lacks public accountability.</p></div>
+      <div class="box vs"><h4>Socioeconomic View</h4><p>Management must care about <b>broader social welfare</b>, creating value for society, not just profits.</p><p class="small"><b>Arguments for CSR:</b> adds long-run profits; improves public image; avoids stricter government regulation; ethical obligation and better environment; meets public expectations.</p></div>
+    </div>
+
+    <h3>Four CSR strategies: the spectrum</h3>
+    <div class="spectrum-axis"><span>◀ Low responsibility</span><span>High responsibility ▶</span></div>
+    <div class="spectrum">
+      <div class="s1"><b>Obstructionist</b><span>Actively <b>avoids</b> responsibility. Denies harm, hides information, fights laws in court, may act illegally.</span></div>
+      <div class="s2"><b>Defensive</b><span>Does the <b>legal minimum</b>. Admits errors only when forced by law or public pressure; apologises after backlash.</span></div>
+      <div class="s3"><b>Accommodative</b><span><b>Accepts</b> responsibility; meets economic, legal and ethical criteria; does what stakeholders <b>request</b>; e.g., funds clean-up after public concern.</span></div>
+      <div class="s4"><b>Proactive</b><span><b>Anticipates</b> issues and goes beyond the law to lead; e.g., Tesla's renewable energy, Microsoft's carbon-negative goal.</span></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Accommodative vs. Proactive</strong><p>Ask: <b>who moved first?</b> If the company acted <b>after</b> stakeholders asked or complained, it's <b>Accommodative</b>. If it acted <b>before</b> anyone asked, it's <b>Proactive</b>. Defensive = only because the <b>law</b> forced them.</p></div>
+
+    <h3>CSR audits</h3>
+    <p>A <b>CSR (social responsibility) audit</b> evaluates a company's social, ethical, environmental and legal performance to check whether it is meeting its responsibilities.</p>
+    <div class="grid2">
+      <div class="box"><h4>What it evaluates</h4><ul><li>Environmental practices (pollution, waste, energy)</li><li>Employee treatment (wages, safety, diversity, training)</li><li>Customer responsibility (product safety, truthful ads, privacy)</li><li>Community involvement (giving, volunteering)</li><li>Ethics and governance (corruption, transparency)</li><li>Legal compliance (labour, environmental, business law)</li></ul></div>
+      <div class="box"><h4>Why companies do it</h4><ul><li>Identify ethical or environmental problems</li><li>Improve decision-making</li><li>Build stakeholder trust</li><li>Protect reputation</li><li>Ensure legal compliance</li><li>Reduce future legal and financial risk</li><li>Improve long-term sustainability</li></ul></div>
+    </div>
+    <p class="small"><b>Slide example:</b> a clothing company's audit finds an overseas supplier with unsafe conditions. It changes suppliers, starts annual supplier inspections and publishes a sustainability report.</p>
+  </article>
+
+  <!-- L6 -->
+  <article class="lesson" id="l6">
+    <header><span class="num">Lesson 6</span><h2>Ethics, dilemmas and whistleblowing</h2></header>
+    <div class="grid2">
+      <div class="box"><h4>Ethics</h4><p>A code of moral principles that sets standards of good vs. bad, right vs. wrong.</p></div>
+      <div class="box"><h4>Ethical behaviour</h4><p>What is accepted as good and right within the governing moral code.</p></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Ethics vs. Law</strong><p>Legal ≠ ethical. <b>Legal behaviour is not necessarily ethical</b>, <b>ethical behaviour is not necessarily legal</b>, and <b>the law sets a minimum standard; ethics can ask for more</b>. Be ready to give an example of each.</p></div>
+    <details><summary>The three brain teasers from class (legal or ethical?)</summary><div class="body">
+      <div class="tablewrap"><table>
+        <tr><th>Case</th><th>Legal?</th><th>Ethical?</th><th>Principle</th></tr>
+        <tr><td><b>Golden parachute:</b> CEO restructures before an acquisition, triggering a disclosed $40M payout</td><td>Yes</td><td>Debatable, especially if workers are laid off</td><td>Legal is not necessarily ethical</td></tr>
+        <tr><td><b>The leak:</b> employee breaks her NDA to prove the company hid product harm</td><td>No (breach of contract)</td><td>Most say yes</td><td>Ethical is not necessarily legal</td></tr>
+        <tr><td><b>Tax structure:</b> profits routed through 3 countries to pay under 2% tax</td><td>Yes</td><td>Widely seen as no</td><td>Law is the minimum; ethics asks for more</td></tr>
+      </table></div>
+    </div></details>
+    <p><b>Values</b> are broad beliefs about what is appropriate behaviour. They differ from person to person, which is why people respond differently to the same ethical challenge.</p>
+
+    <h3>Three viewpoints on ethics across cultures</h3>
+    <div class="grid3">
+      <div class="box vs"><h4>Cultural relativism</h4><p>Right and wrong depend on the <b>culture</b>. No framework is superior.</p><p class="small">A gift during negotiations: respect in some cultures, bribery in others.</p></div>
+      <div class="box vs"><h4>Ethical universalism</h4><p>Some principles (fairness, honesty) apply to <b>all humans everywhere</b>.</p><p class="small">Child labour is wrong everywhere, whatever the local economy.</p></div>
+      <div class="box vs"><h4>Ethical imperialism</h4><p><b>Imposing</b> your own culture's standards on others, ignoring local norms.</p><p class="small">A U.S. firm enforces head-office dress code or a no-alcohol rule on all overseas staff.</p></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Universalism vs. Imperialism</strong><p>Both apply one standard everywhere. The difference: universalism applies <b>basic human principles</b> everyone shares (honesty, no child labour). Imperialism forces <b>one culture's preferences</b> (dress code, drinking rules, distribution methods) on another.</p></div>
+
+    <h3>Ethical dilemmas</h3>
+    <p>An <b>ethical dilemma</b> is a choice that offers personal or organizational benefit but may be unethical. Example: mining a remote village's gold while contaminating its water.</p>
+    <div class="grid2">
+      <div class="box"><h4>Dilemmas managers face</h4><ul><li>Discrimination (non-job-relevant bias)</li><li>Sexual harassment</li><li>Conflicts of interest: bribes and kickbacks</li><li>Customer confidence: sharing privileged information</li><li>Organizational resources: misusing supplies, money, email</li></ul></div>
+      <div class="box"><h4>Test of disclosure</h4><p>Ask: <i>"How would we feel if everyone knew about this decision?"</i></p><p>Not concerned → likely ethical. Uneasy → probably not.</p><h4>Codes of ethics</h4><p class="small">Official written guidelines for situations prone to dilemmas: diversity, bribes and kickbacks, political contributions, honest records, customer/supplier relationships, confidentiality.</p></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Bribe vs. Kickback</strong><p><b>Bribe:</b> a payment <b>before</b> the decision to influence it, usually one-time. "Here's money if you approve this deal." <br><b>Kickback:</b> a cut of the proceeds paid <b>after</b> the deal is approved, often ongoing. "I'll give you 10% of the profits." A kickback is a <b>type</b> of bribe.</p></div>
+    <details><summary>The 10-step checklist for ethical decisions</summary><div class="body"><ol>
+      <li>Identify the ethical issue or problem.</li><li>List the facts that directly affect the decision.</li><li>Identify who might be affected, and how.</li><li>Explain what each affected person would want you to do.</li><li>Identify your options.</li><li>Test each option: Is it legal? Is it ethical? Who does it benefit?</li><li>Decide which option to follow.</li><li>Double-check: "Would I be okay if my family found out?"</li><li>Double-check: "Would I be okay reading about it in the newspaper?"</li><li>Take the action.</li></ol>
+      <p class="small">See this worked through in tab 3.</p></div></details>
+
+    <h3>Whistleblowing</h3>
+    <p>A <b>whistleblower</b> exposes illegal, unethical or incorrect activity inside a private or public organization. Wrongdoing can include breaking policy or law, threats to the public interest, fraud or corruption. Whistleblowers were often <b>vilified</b>, but that view is shifting thanks to high-profile cases and <b>laws that protect whistleblowers from retaliation</b>.</p>
+    <p class="small">Examples of protection in Canada (where BOH4M is taught): the Criminal Code makes it an offence for an employer to punish an employee for reporting a crime to law enforcement; the Public Servants Disclosure Protection Act protects federal public servants; Ontario's Occupational Health and Safety Act protects workers who raise safety concerns from reprisal. Your slides only require you to know that such laws exist and why.</p>
+  </article>
+
+  <!-- L7 -->
+  <article class="lesson" id="l7">
+    <header><span class="num">Lesson 7</span><h2>Globalization</h2></header>
+    <p><b>Globalization</b> is the process by which businesses operate and compete in international markets through increased trade, technology and communication, creating greater <b>economic interdependence</b> between countries. In plain words: products, services, ideas, money and workers cross borders more easily. Your phone may be designed in the USA, made in China and sold in Malaysia.</p>
+    <div class="grid2">
+      <div class="box" style="border-top:4px solid var(--good)"><h4>Advantages → manager impact</h4><ul>
+        <li><b>Market expansion</b> (Apple, Samsung sell worldwide) → decide which countries to enter and how to adapt products</li>
+        <li><b>Access to resources and talent</b> (IT support outsourced to India) → balance cost savings with quality control</li>
+        <li><b>Diverse workforce</b> (global design teams) → lead multicultural teams</li>
+        <li><b>Economies of scale</b> (Walmart, Shopee supply chains) → focus on efficiency and cost leadership</li></ul></div>
+      <div class="box" style="border-top:4px solid var(--bad)"><h4>Disadvantages → manager impact</h4><ul>
+        <li><b>Cultural barriers</b> (an ad that offends) → research local culture first</li>
+        <li><b>Increased competition</b> (small shops vs. Amazon) → differentiate the business</li>
+        <li><b>Economic dependency</b> (COVID-19 supply delays, sudden 50% tariffs) → plan risks and alternatives</li>
+        <li><b>Ethical and social issues</b> (sweatshops) → ensure ethical decisions and comply with each country's laws</li></ul></div>
+    </div>
+    <div class="tip"><strong class="label">Exam tip · Exam practice from your slides</strong><p>"Define globalization. Explain one advantage and one disadvantage." For full marks: definition + named advantage + real example + manager impact, then the same for a disadvantage.</p></div>
+  </article>
+</section>
+
+<!-- ================= CARDS ================= -->
+<section class="panel" id="cards" role="tabpanel" aria-labelledby="tab-cards">
+  <div><h2>Concept cards</h2><p class="lede">Say the definition out loud, then tap the card to check. Filter by topic.</p></div>
+  <div class="lesson-nav" id="cardFilters"></div>
+  <div class="cards" id="cardGrid"></div>
+</section>
+
+<!-- ================= EXAMPLES ================= -->
+<section class="panel" id="examples" role="tabpanel" aria-labelledby="tab-examples">
+  <div><h2>Step-by-step examples</h2><p class="lede">First, worked exam answers you can reveal one step at a time. Then quick "classify it" drills: pick an answer to see whether you're right and why.</p></div>
+  <div id="steppers" style="display:grid;gap:16px"></div>
+  <h2>Classify-it drills</h2>
+  <div class="lesson-nav" id="drillTabs"></div>
+  <div class="drill" id="drillBox"></div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="panel" id="quiz" role="tabpanel" aria-labelledby="tab-quiz">
+  <div class="quizhead"><div><h2>Exam-style practice quiz</h2><p class="small">Multiple choice and case-study questions. Every option explains why it is right or wrong once you answer.</p></div><div class="score" id="scoreTxt">0 / 0</div></div>
+  <div class="meter"><span id="meter" style="width:0"></span></div>
+  <div class="btnrow"><button class="btn ghost" type="button" id="resetQuiz">Restart quiz</button><button class="btn ghost" type="button" id="retryWrong">Retry only the ones I missed</button></div>
+  <div id="quizBox" style="display:grid;gap:14px"></div>
+  <div id="quizResult"></div>
+</section>
+</main>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- tabs ---------- */
+const tabs=[...document.querySelectorAll('[role=tab]')];
+function show(id){
+  tabs.forEach(t=>{const on=t.getAttribute('aria-controls')===id;t.setAttribute('aria-selected',on);});
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  store.set('m1tab',id);
+}
+tabs.forEach(t=>t.addEventListener('click',()=>{show(t.getAttribute('aria-controls'));window.scrollTo({top:0})}));
+show(store.get('m1tab','lessons'));
+
+/* ---------- POLC ---------- */
+const polc={
+ P:"<b>Planning</b>: setting performance objectives and deciding how to achieve them; the roadmap for the future.<br><i>Example:</i> A Tim Hortons franchise manager sets a goal to raise breakfast sales 10% this quarter and decides to launch a new combo deal.",
+ O:"<b>Organizing</b>: arranging tasks, people and other resources to do the work; building the structure that supports the plan.<br><i>Example:</i> The manager schedules two extra staff for the 6–9 AM rush, orders more ingredients and assigns one person to the drive-thru.",
+ L:"<b>Leading</b>: inspiring and motivating people to work hard and perform well; building enthusiasm and guiding effort.<br><i>Example:</i> At the team huddle she explains why the combo matters, praises fast service and offers a reward to the best shift.",
+ C:"<b>Controlling</b>: measuring performance, comparing results with objectives, and taking corrective action.<br><i>Example:</i> After four weeks sales are up only 4%. She checks the data, sees drive-thru waits are long, and adds a second window staffer. Then the cycle restarts with new planning."
+};
+const pb=[...document.querySelectorAll('#polc button')];
+function setP(k){pb.forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));$('#polcOut').innerHTML=polc[k]}
+pb.forEach(b=>b.addEventListener('click',()=>setP(b.dataset.k)));setP('P');
+
+/* ---------- flashcards ---------- */
+const cards=[
+ ["Managers","Manager","A person who supports, activates and is responsible for the work of others. Found in all organizations."],
+ ["Managers","Top-level managers","Set vision, strategy and direction for the whole organization (CEO, CFO, President, Board)."],
+ ["Managers","Middle-level managers","The bridge: turn strategy into operational plans and coordinate departments (Regional, Plant, Department managers)."],
+ ["Managers","Lower-level managers","First-line supervisors who run daily operations and train frontline staff (Supervisor, Team Leader, Shift Manager)."],
+ ["Managers","Line vs. Staff manager","Line: directly supervises people who make the product or service. Staff: advises and supports line workers with expertise (HR, Legal)."],
+ ["Managers","Functional vs. General manager","Functional: one area (finance, marketing). General: several functions across departments."],
+ ["Managers","Project manager","Coordinates people and resources to finish a specific project on time and budget; often temporary."],
+ ["Managers","Katz's three skills","Conceptual (see the big picture), Human (work with people, needed at every level), Technical (specialist know-how). Conceptual rises and technical falls as you move up."],
+ ["Managers","Intellectual capital","The collective brainpower or shared knowledge of a workforce."],
+ ["POLC","POLC","Planning, Organizing, Leading, Controlling: the four functions of management, running as a continuous cycle."],
+ ["POLC","Controlling","Measuring performance, comparing results to objectives, and taking corrective action."],
+ ["Classical","Classical management theory","Late 1800s, Industrial Revolution. Assumes workers have only economic and physical needs; seeks the one best way to raise efficiency."],
+ ["Classical","Scientific management (Taylor)","Find the one best way to do each job by observing and measuring. Money is the main motivator; piecework pay; extreme division of labour."],
+ ["Classical","Piecework","Paying workers per item produced (plus bonuses) rather than a flat wage."],
+ ["Classical","Administrative management (Fayol)","Management as a universal process of planning, organizing, controlling and deciding, guided by 14 principles."],
+ ["Classical","Unity of command","Fayol: each employee receives orders from only one superior."],
+ ["Classical","Bureaucratic management (Weber)","Rules, hierarchy and division of labour. Authority comes from the legal power of the position, not personality."],
+ ["Modern","Theory X","Manager assumes employees are lazy, avoid responsibility and fear change → tight, authoritarian control."],
+ ["Modern","Theory Y","Manager assumes employees like work, seek responsibility and are creative → empowering, optimistic style."],
+ ["Modern","Self-fulfilling prophecy","A manager's X or Y assumptions shape how they manage, which makes employees behave that way."],
+ ["Modern","Quantitative approach","Uses maths models, statistics and decision tools. Best for stable, large-scale operations."],
+ ["Modern","Systems approach","Sees the business as interconnected parts working toward common goals. Best for large multi-department firms."],
+ ["Modern","Contingency approach","No one-size-fits-all; decisions depend on the situation. Best for startups and fast-changing industries."],
+ ["CSR","CSR","An obligation to act in ways that serve both the organization's interests and society's interests."],
+ ["CSR","Stakeholder","Anyone who can affect or be affected by a business's decisions, actions and policies."],
+ ["CSR","Charity principle","Wealthy firms should give back to the less fortunate through philanthropy and donations."],
+ ["CSR","Stewardship principle","Leaders manage resources as caretakers for society's long-term health: people, communities, environment."],
+ ["CSR","Classical view (Friedman)","Management's only responsibility is to maximize profits for shareholders."],
+ ["CSR","Socioeconomic view","Management must also care about broader social welfare, not just profit."],
+ ["CSR","Obstructionist strategy","Actively avoids responsibility, denies harm, hides information, fights laws."],
+ ["CSR","Defensive strategy","Does only the legal minimum; acts only when forced by law or public pressure."],
+ ["CSR","Accommodative strategy","Accepts responsibility and does what stakeholders request."],
+ ["CSR","Proactive strategy","Anticipates issues and goes beyond the law to contribute to society."],
+ ["CSR","CSR audit","An evaluation of a company's social, ethical, environmental and legal performance."],
+ ["Ethics","Ethics","A code of moral principles setting standards of good vs. bad, right vs. wrong."],
+ ["Ethics","Ethical dilemma","A choice that offers personal or organizational benefit but may be unethical."],
+ ["Ethics","Cultural relativism","Ethical norms depend on the culture; no framework is superior."],
+ ["Ethics","Ethical universalism","Certain principles (fairness, honesty) apply to all humans everywhere."],
+ ["Ethics","Ethical imperialism","Imposing your own culture's ethical standards on others, ignoring local norms."],
+ ["Ethics","Bribe","A payment before a decision, to influence it; usually one-time."],
+ ["Ethics","Kickback","A cut of the proceeds paid after a deal is approved; often ongoing. A type of bribe."],
+ ["Ethics","Test of disclosure","Ask: how would we feel if everyone knew about this decision?"],
+ ["Ethics","Code of ethics","Official written guidelines for behaviour in situations prone to ethical dilemmas."],
+ ["Ethics","Whistleblower","A person who exposes illegal, unethical or incorrect activity within an organization."],
+ ["Global","Globalization","Businesses operating and competing internationally through trade, technology and communication, creating economic interdependence."],
+ ["Global","Economies of scale","Producing on a larger scale lowers the cost per unit."],
+ ["Global","Economic dependency","Relying on foreign suppliers makes a business vulnerable to disruptions (pandemics, tariffs)."]
+];
+const topics=["All",...new Set(cards.map(c=>c[0]))];
+let cf="All";
+function drawCards(){
+  $('#cardFilters').innerHTML=topics.map(t=>`<button type="button" class="chip" aria-pressed="${t===cf}" data-t="${t}">${t}</button>`).join('');
+  $('#cardGrid').innerHTML=cards.filter(c=>cf==="All"||c[0]===cf).map(c=>`<button type="button" class="flash" aria-label="Flip card: ${c[1]}"><div class="inner"><div class="face"><span class="small">${c[0]}</span><h4>${c[1]}</h4><span class="hint">Tap to reveal</span></div><div class="face back"><h4>${c[1]}</h4><p>${c[2]}</p></div></div></button>`).join('');
+}
+$('#cardFilters').addEventListener('click',e=>{const b=e.target.closest('button');if(b){cf=b.dataset.t;drawCards()}});
+$('#cardGrid').addEventListener('click',e=>{const b=e.target.closest('.flash');if(b)b.classList.toggle('flipped')});
+drawCards();
+
+/* ---------- steppers ---------- */
+const steppers=[
+ {t:"Worked example 1 · Apply POLC to a business",q:"Exam question: <i>\"Explain how the manager of a new bubble-tea shop would use each of the four functions of management.\"</i>",
+  s:["<b>Name the framework.</b> Start with one line: \"The four functions of management are Planning, Organizing, Leading and Controlling (POLC), which work as a continuous cycle.\"",
+     "<b>Planning.</b> Define it, then apply it: the manager sets a SMART-style goal, e.g., sell 300 drinks a day within 3 months, and plans a student discount to reach it.",
+     "<b>Organizing.</b> She hires 4 part-time staff, builds a shift schedule, sets up stations (tea, toppings, cashier) and orders supplies.",
+     "<b>Leading.</b> She trains staff, explains the goal, praises good service and offers a bonus when daily targets are hit.",
+     "<b>Controlling.</b> Each week she compares actual sales with the 300-drink target. Sales are 220, so she takes corrective action: extends evening hours near exam season.",
+     "<b>Close the loop.</b> \"The results from controlling feed into the next round of planning.\" This last line shows the examiner you understand the cycle."]},
+ {t:"Worked example 2 · Classify a CSR strategy and analyse stakeholders",q:"Case: <i>A chocolate company learns cocoa farms in its supply chain use child labour. News reports appear. The company first stays silent. After a consumer boycott starts trending, it promises to audit suppliers.</i> Identify the CSR strategy and analyse two stakeholders.",
+  s:["<b>Find the trigger.</b> The company acted only <b>after</b> a boycott (public pressure). It did not deny harm or hide it (so not obstructionist), and it didn't act before anyone asked (so not proactive).",
+     "<b>Choose between Defensive and Accommodative.</b> It acted to protect itself after backlash, with a promise rather than real change yet. That best fits <b>Defensive</b>. If it had fully accepted responsibility and met stakeholders' demands, you could argue Accommodative. Say which and <b>why</b>.",
+     "<b>Stakeholder 1: Customers (external).</b> Want ethically made products. Influence: the boycott directly cuts sales and forced the response.",
+     "<b>Stakeholder 2: Shareholders (internal).</b> Want profit and a protected reputation. Influence: they may pressure managers to fix the supply chain to stop falling sales.",
+     "<b>Recommend a better path.</b> Move to a <b>Proactive</b> strategy: run a CSR audit, switch to certified suppliers, publish a sustainability report. Link to <b>ethical universalism</b>: child labour is wrong everywhere."]},
+ {t:"Worked example 3 · Use the ethical decision checklist",q:"Dilemma from your slides: <i>You own a drinks company and discover an ingredient in your newest drink is carcinogenic. What do you do?</i>",
+  s:["<b>Identify the issue:</b> customer safety vs. profit and reputation.",
+     "<b>List the facts:</b> the ingredient may cause cancer; the drink is on sale; recalling it is expensive.",
+     "<b>Who is affected and what would they want?</b> Customers want safety; employees want job security; shareholders want profit but also a reputation that lasts; regulators want compliance.",
+     "<b>List options:</b> (a) keep selling quietly, (b) quietly change the recipe, (c) recall the drink, tell the public and reformulate.",
+     "<b>Test each option.</b> (a) likely illegal and clearly unethical (obstructionist). (b) may be legal but hides harm from people who already drank it. (c) legal, ethical, protects customers and long-run trust.",
+     "<b>Double-check:</b> Would I be okay if my family knew? If it was in the newspaper? Only option (c) passes the test of disclosure.",
+     "<b>Act and explain:</b> recall the product. Conclude: \"Ethical business is good business; short-term cost protects long-term reputation and profit.\""]}
+];
+$('#steppers').innerHTML=steppers.map((st,i)=>`<div class="stepper"><h3>${st.t}</h3><p>${st.q}</p><div class="steps">${st.s.map((x,j)=>`<div class="step${j?' hidden':''}"><span class="n">${j+1}</span><p>${x}</p></div>`).join('')}</div><div class="btnrow"><button class="btn" type="button" data-next="${i}">Show next step</button><button class="btn ghost" type="button" data-all="${i}">Show all</button><button class="btn ghost" type="button" data-hide="${i}">Start over</button></div></div>`).join('');
+$('#steppers').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const box=b.closest('.stepper');const hidden=[...box.querySelectorAll('.step.hidden')];
+  if(b.dataset.next!==undefined&&hidden[0])hidden[0].classList.remove('hidden');
+  if(b.dataset.all!==undefined)hidden.forEach(h=>h.classList.remove('hidden'));
+  if(b.dataset.hide!==undefined)[...box.querySelectorAll('.step')].forEach((s,j)=>j&&s.classList.add('hidden'));
+});
+
+/* ---------- drills ---------- */
+const drills=[
+ {n:"Level of management",c:["Top","Middle","Lower"],items:[
+  ["A shift manager at McDonald's assigns tasks to cashiers for the lunch rush.","Lower","Supervises frontline staff day to day."],
+  ["The CFO decides whether the company should borrow $50 million to expand overseas.","Top","Major financial and strategic decision for the whole company."],
+  ["A regional manager turns head office's new sales strategy into targets for 12 stores.","Middle","Translating strategy into operational plans is the middle-level bridge role."],
+  ["A plant manager coordinates production and maintenance departments and reports output to executives.","Middle","Coordinates departments and reports upward."]]},
+ {n:"POLC function",c:["Planning","Organizing","Leading","Controlling"],items:[
+  ["Comparing this month's sales with the target and fixing the gap.","Controlling","Measure → compare → correct."],
+  ["Creating a new org chart and assigning staff to each project team.","Organizing","Arranging people and resources into a structure."],
+  ["Setting a goal to cut energy costs by 15% next year.","Planning","Setting an objective for the future."],
+  ["Giving a motivating speech and recognising top performers.","Leading","Inspiring and motivating people."]]},
+ {n:"CSR strategy",c:["Obstructionist","Defensive","Accommodative","Proactive"],items:[
+  ["A factory denies polluting a river and challenges the fine in court.","Obstructionist","Denial plus fighting the law."],
+  ["A company installs required filters only after the government threatens a penalty.","Defensive","Legal minimum, done only because forced."],
+  ["After residents complain, a company voluntarily funds a park clean-up.","Accommodative","Accepts responsibility and responds to what stakeholders requested."],
+  ["A firm sets a carbon-negative target before any law or customer demands it.","Proactive","Anticipates issues and goes beyond the law."]]},
+ {n:"Ethics viewpoint",c:["Cultural relativism","Universalism","Imperialism"],items:[
+  ["\"Gift-giving to partners is normal here, so it's fine for us to do it here.\"","Cultural relativism","Right and wrong depend on local context."],
+  ["A company bans child labour in every supplier, in every country.","Universalism","A basic human principle applied everywhere."],
+  ["Head office forces overseas staff to follow its home-country dress code.","Imperialism","Imposing one culture's preferences and ignoring local customs."]]},
+ {n:"Bribe or kickback",c:["Bribe","Kickback"],items:[
+  ["A company pays a safety inspector to ignore violations before the inspection report.","Bribe","Paid before, to influence the decision."],
+  ["A supplier secretly gives a purchasing officer 5% of every order after winning the contract.","Kickback","An ongoing cut of the proceeds, paid after the deal."]]},
+ {n:"Classical theorist",c:["Taylor","Fayol","Weber"],items:[
+  ["\"Authority comes from the position, backed by written rules.\"","Weber","Bureaucratic: legal-rational authority."],
+  ["\"Time each worker and pay them per unit produced.\"","Taylor","Scientific management: measurement and piecework."],
+  ["\"Each employee should report to only one boss.\"","Fayol","Unity of command, one of the 14 principles."]]},
+ {n:"Charity or stewardship",c:["Charity","Stewardship"],items:[
+  ["Donating $1 million to earthquake relief.","Charity","Giving money away to people in need."],
+  ["Replanting two trees for every tree logged.","Stewardship","Managing resources responsibly for the long term."],
+  ["Paying fair wages throughout the supply chain.","Stewardship","How the business runs itself, not a donation."]]}
+];
+let dIdx=0;
+function drawDrill(){
+  $('#drillTabs').innerHTML=drills.map((d,i)=>`<button type="button" class="chip" aria-pressed="${i===dIdx}" data-i="${i}">${d.n}</button>`).join('');
+  const d=drills[dIdx];
+  $('#drillBox').innerHTML=d.items.map((it,i)=>`<div class="drill-item" data-i="${i}"><p>${it[0]}</p><div class="opts">${d.c.map(c=>`<button type="button" class="opt" data-c="${c}">${c}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('');
+}
+$('#drillTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b){dIdx=+b.dataset.i;drawDrill()}});
+$('#drillBox').addEventListener('click',e=>{
+  const b=e.target.closest('.opt');if(!b)return;
+  const row=b.closest('.drill-item');const it=drills[dIdx].items[+row.dataset.i];
+  row.querySelectorAll('.opt').forEach(o=>{o.classList.remove('right','wrong');if(o.dataset.c===it[1])o.classList.add('right')});
+  const ok=b.dataset.c===it[1];if(!ok)b.classList.add('wrong');
+  row.querySelector('.fb').innerHTML=`<div class="feedback ${ok?'ok':'no'}"><b>${ok?'Correct.':'Not quite. Answer: '+it[1]+'.'}</b> ${it[2]}</div>`;
+});
+drawDrill();
+
+/* ---------- quiz ---------- */
+// [type, case, question, [[option, note]...], correctIndex]
+const Q=[
+ ["MC","","A retail store manager who schedules cashiers and trains new staff each day is an example of which level of management?",[["Top-level","Top managers set company-wide vision; they don't run daily shifts."],["Middle-level","Middle managers coordinate several units and translate strategy."],["Lower-level","Correct. First-line managers supervise daily work and train frontline staff."],["Executive","Executive managers lead the whole organization."]],2],
+ ["MC","","According to Katz's Skills Model, which skill becomes MORE important as a manager moves up the hierarchy?",[["Technical","Technical skills matter most at the lower level and decrease going up."],["Conceptual","Correct. Top managers need to see the organization as a whole system."],["Human","Human skills are vital at every level, so they don't 'increase' going up."],["Clerical","Not one of Katz's three skills."]],1],
+ ["MC","","The HR department advises production supervisors on hiring rules. The HR director is best described as a:",[["Line manager","Line managers directly supervise people producing goods or services."],["Staff manager","Correct. Staff managers use specialist expertise to advise and support line workers."],["Project manager","Project managers lead a temporary, specific project."],["General manager","General managers oversee multiple functions."]],1],
+ ["MC","","Measuring performance, comparing it to objectives and taking corrective action describes which function?",[["Planning","Planning sets the objectives in the first place."],["Organizing","Organizing arranges people and resources."],["Leading","Leading motivates people."],["Controlling","Correct. Measure, compare, correct."]],3],
+ ["CASE","A manager at an electronics store notices that customer complaints rose 20% last month. She reviews the complaint data and retrains staff on the returns process.","Which two functions of management is she mainly using?",[["Planning and Organizing","She isn't setting new goals or restructuring."],["Controlling and Leading","Correct. Reviewing data against standards is controlling; retraining and guiding staff is leading."],["Organizing and Leading","Reviewing complaint data is a controlling activity, not organizing."],["Planning only","She is responding to results, which is controlling."]],1],
+ ["MC","","Classical management theory assumes that employees:",[["Have important social needs at work","That's the Human Relations view (Mayo), which challenged classical theory."],["Have only economic and physical needs","Correct. Classical theory ignored social needs and job satisfaction."],["Are naturally creative and seek responsibility","That's McGregor's Theory Y."],["Should design their own work methods","Classical theory excludes employee voice."]],1],
+ ["MC","","Which theorist believed money was the main motivator and promoted piecework pay?",[["Henri Fayol","Fayol focused on 14 principles of administration."],["Max Weber","Weber focused on rules and authority of positions."],["F.W. Taylor","Correct. Scientific management: one best way, piecework, division of labour."],["Douglas McGregor","McGregor described Theory X and Y."]],2],
+ ["MC","","\"Each employee should receive orders from only one superior.\" This is Fayol's principle of:",[["Unity of direction","Unity of direction = one plan for activities with the same goal."],["Scalar chain","Scalar chain is the line of authority from top to bottom."],["Unity of command","Correct. One boss per employee."],["Centralization","Centralization is about where decisions are made."]],2],
+ ["MC","","Which approach says a manager's authority comes from the legal power of their position, not their personality?",[["Scientific management","Taylor focused on efficient methods."],["Bureaucratic management","Correct. Weber's legal-rational authority."],["Administrative management","Fayol focused on management functions and 14 principles."],["Contingency approach","A modern approach about adapting to situations."]],1],
+ ["MC","","A manager believes staff will slack off unless watched closely, so she checks every task. Over time staff do become unmotivated. This illustrates:",[["Theory Y and the Hawthorne effect","Theory Y assumes the opposite about workers."],["Theory X and a self-fulfilling prophecy","Correct. Her assumptions shaped her style, which produced the behaviour she expected."],["The contingency approach","Contingency is about adapting to the situation, not fixed assumptions."],["The stewardship principle","That's a CSR principle."]],1],
+ ["CASE","A fast-growing fashion startup changes its product line every few weeks based on social-media trends. Managers adjust staffing, marketing and suppliers to each new situation.","Which management approach fits best?",[["Quantitative","Better for stable, predictable industries such as banking."],["Systems","Fits large multi-department corporations aligning all parts."],["Contingency","Correct. No one-size-fits-all; ideal for fast-changing industries like fashion and tech."],["Bureaucratic","Rigid rules would slow down a fast-changing startup."]],2],
+ ["MC","","A logistics company uses statistical models to decide warehouse locations and inventory levels. This is the:",[["Systems approach","Systems sees the firm as interconnected parts."],["Quantitative approach","Correct. Mathematical models and statistics for decisions."],["Contingency approach","Contingency adapts management style to the situation."],["Human relations approach","Focuses on social factors, not maths."]],1],
+ ["MC","","Which statement reflects Milton Friedman's Classical View of social responsibility?",[["Business must care for broad social welfare","That's the Socioeconomic View."],["Management's only responsibility is to maximize profits for shareholders","Correct."],["Businesses should anticipate social issues before laws require it","That describes a Proactive CSR strategy."],["Wealthy firms should donate to the less fortunate","That's the Charity Principle."]],1],
+ ["MC","","A mining company replants forests it clears and invests in long-term water systems for nearby towns. This best reflects the:",[["Charity principle","Charity is giving donations away."],["Stewardship principle","Correct. Managing resources as a caretaker for society's long-term health."],["Classical view","The classical view focuses only on profit."],["Obstructionist strategy","Obstructionist firms avoid responsibility."]],1],
+ ["CASE","A chemical plant is told by residents that its fumes are causing health complaints. The company accepts responsibility, meets with residents and installs the extra filters they requested.","Which CSR strategy is the company using?",[["Obstructionist","It didn't deny or hide anything."],["Defensive","Defensive firms act only when forced by law; here stakeholders simply asked."],["Accommodative","Correct. It accepted responsibility and did what stakeholders requested."],["Proactive","Proactive firms act before anyone asks."]],2],
+ ["MC","","Which of the following is an EXTERNAL stakeholder?",[["Employees","Internal."],["Shareholders","Internal (owners)."],["Trade unions","Correct. Unions represent workers but are outside organizations."],["Managers","Internal."]],2],
+ ["MC","","A CSR audit is best defined as:",[["A financial audit of a company's tax returns","CSR audits go beyond finances."],["An evaluation of a company's social, ethical, environmental and legal performance","Correct."],["A government inspection of workplace safety only","Too narrow; also not necessarily by government."],["A survey of customer satisfaction","Only one small piece of CSR."]],1],
+ ["MC","","An employee breaks her non-disclosure agreement to reveal that her company hid product dangers. This illustrates that:",[["Legal behaviour is always ethical","The case shows the opposite."],["Ethical behaviour is not necessarily legal","Correct. Breaking an NDA is illegal (breach of contract), but many see it as ethical."],["The law sets the maximum ethical standard","The law sets the minimum."],["Cultural relativism is correct","This case isn't about cultural differences."]],1],
+ ["MC","","A Canadian company insists all its offices in Asia follow its home-office dress code, ignoring local customs. This is an example of:",[["Cultural relativism","Relativism would respect local norms."],["Ethical universalism","Universalism applies basic human principles, not dress preferences."],["Ethical imperialism","Correct. Imposing one culture's standards on another."],["Stewardship","A CSR principle, not an ethics viewpoint."]],2],
+ ["MC","","A supplier secretly pays a purchasing manager 10% of the profits after being awarded a contract. This is a:",[["Bribe","A bribe is paid before the decision to influence it."],["Kickback","Correct. A cut of the proceeds paid after the deal, often ongoing."],["Code of ethics","A code is a set of written guidelines."],["Whistleblowing","Whistleblowing exposes wrongdoing."]],1],
+ ["MC","","\"How would we feel if everyone knew about this decision?\" This question is called the:",[["Test of disclosure","Correct."],["CSR audit","An audit evaluates performance."],["Scalar chain","One of Fayol's principles."],["Stakeholder analysis","Identifies affected groups."]],0],
+ ["MC","","A person who exposes illegal or unethical activity inside an organization is a:",[["Stakeholder","Too general."],["Whistleblower","Correct."],["Staff manager","A type of manager."],["Activist","Activists are usually outside the organization."]],1],
+ ["CASE","A Malaysian snack brand starts selling in Indonesia and Thailand. Its packaging slogan is misunderstood in one market, and a sudden tariff raises costs on imported ingredients.","Which TWO disadvantages of globalization does this show?",[["Market expansion and economies of scale","These are advantages."],["Cultural barriers and economic dependency","Correct. The slogan problem is a cultural barrier; reliance on imported ingredients hit by tariffs is economic dependency."],["Increased competition and diverse workforce","Neither is described here."],["Ethical issues and intellectual capital","Not described in this case."]],1],
+ ["MC","","Which is an ADVANTAGE of globalization for businesses?",[["Cultural barriers","Disadvantage."],["Economic dependency","Disadvantage."],["Economies of scale","Correct. Producing more lowers cost per unit."],["Increased competition from multinationals","Disadvantage, especially for local firms."]],2],
+ ["MC","","Which statement about Theory Y managers is TRUE?",[["They exert tight control and allow no employee involvement","That's Theory X."],["They give employees responsibility and freedom to develop","Correct. Liberating, empowering, optimistic."],["They believe workers fear change","Theory X assumption."],["They rely mainly on piecework pay","That's Taylor."]],1]
+];
+let order=Q.map((_,i)=>i),answers={},
+    best=store.get('m1best',null);
+function letter(i){return "ABCD"[i]}
+function drawQuiz(){
+  $('#quizBox').innerHTML=order.map((qi,n)=>{const q=Q[qi];return `<div class="q" data-q="${qi}"><span class="qtype">Question ${n+1} · ${q[0]==="CASE"?"Case study":"Multiple choice"}</span>${q[1]?`<div class="case">${q[1]}</div>`:''}<p><b>${q[2]}</b></p><div class="choices">${q[3].map((o,i)=>`<button type="button" class="choice" data-i="${i}"><span class="letter">${letter(i)}</span><span>${o[0]}</span><span class="note">${o[1]}</span></button>`).join('')}</div></div>`}).join('');
+  $('#quizResult').innerHTML='';updScore();
+}
+function updScore(){
+  const done=order.filter(i=>answers[i]!==undefined).length;
+  const right=order.filter(i=>answers[i]===Q[i][4]).length;
+  $('#scoreTxt').textContent=`${right} / ${done} correct · ${order.length-done} left`;
+  $('#meter').style.width=(done/order.length*100)+'%';
+  if(done===order.length){
+    const pct=Math.round(right/order.length*100);
+    if(order.length===Q.length&&(best===null||pct>best)){best=pct;store.set('m1best',best)}
+    const msg=pct===100?"Perfect. You're exam-ready for Unit 1.":pct>=80?"Strong result. Review the ones you missed, then retry them.":pct>=60?"Good progress. Re-read the lesson sections behind your misses, then retry.":"Keep going. Go back through the lessons and concept cards, then try again.";
+    $('#quizResult').innerHTML=`<div class="resultbox"><h3>Your score: ${right} / ${order.length} (${pct}%)</h3><p>${msg}</p></div>`;
+  }
+  drawProgress();
+}
+$('#quizBox').addEventListener('click',e=>{
+  const b=e.target.closest('.choice');if(!b)return;
+  const box=b.closest('.q');const qi=+box.dataset.q;if(answers[qi]!==undefined)return;
+  const pick=+b.dataset.i,cor=Q[qi][4];answers[qi]=pick;
+  box.querySelectorAll('.choice').forEach((c,i)=>{c.disabled=true;c.classList.add('show');if(i===cor)c.classList.add('right');else if(i===pick)c.classList.add('wrong')});
+  updScore();
+});
+$('#resetQuiz').addEventListener('click',()=>{order=Q.map((_,i)=>i);answers={};drawQuiz()});
+$('#retryWrong').addEventListener('click',()=>{
+  const wrong=order.filter(i=>answers[i]!==undefined&&answers[i]!==Q[i][4]);
+  if(!wrong.length){$('#quizResult').innerHTML='<div class="resultbox"><p>No missed questions to retry yet. Answer some questions first, or restart the full quiz.</p></div>';return}
+  order=wrong;wrong.forEach(i=>delete answers[i]);drawQuiz();window.scrollTo({top:0});
+});
+function drawProgress(){
+  $('#progress').innerHTML=`<span><b>7</b> lessons</span><span><b>${cards.length}</b> concept cards</span><span><b>${Q.length}</b> quiz questions</span><span>Best full-quiz score: <b>${best===null?'not taken yet':best+'%'}</b></span>`;
+}
+drawQuiz();
+})();
+</script>
+</body>
+</html>
